@@ -3,7 +3,7 @@
 *Under construction. More to come!*
 
 This workshop is designed for a small group size and a room with whiteboard. It 
-has a (_Statistical Rethinking_)[https://xcelab.net/rm/] (McElreath 2020) 
+has a [*Statistical Rethinking*](https://xcelab.net/rm/) (McElreath 2020) 
 flavour to it, i.e., we are revisiting statistical tools and concepts rather 
 than learning about it from scratch.
 
