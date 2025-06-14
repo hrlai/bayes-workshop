@@ -35,6 +35,14 @@
   \endgroup
 }
 
+\newcommand{\exercise}{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \node[anchor=north east] at (current page.north east) {
+        \includegraphics[width=2.5cm]{fig/exercise.png}
+    };
+  \end{tikzpicture}%
+}
+
 \begin{document}
 
 \begin{frame}
@@ -50,6 +58,7 @@ Part 1:
 
 Part 2:
 \begin{itemize}
+\item Hierarchical / multilevel / mixed-effect model
 \item How to make a model go?
 \item Interpreting outputs
 \end{itemize}
@@ -62,15 +71,15 @@ We will not explicitly cover:
 \end{frame}
 
 \begin{frame}{Why?}
-How Bayes reshaped my thinking (for better or worse):
+How Bayes might reshape our thinking:
 \begin{enumerate}
-\item I understand GLMs better
-\item I stop worrying about $p$-values and start to be comfortable with uncertainties
-\item I begin to see my model as modular; when it fails to converge, I understand which part was the culprit
+\item Understand GLMs better
+\item Stop worrying about $p$-values and start to be comfortable with uncertainties
+\item See the model as modular; when it fails to converge, understand which part was the culprit
 \item It is slower, so you think harder about your model
-\item I understand the meaning of each parameter, including the variance term
-\item I can map my parameters to my questions
-\item My models become \textbf{more purposeful}
+\item Understand the meaning of each parameter, including the variance term
+\item Map my parameters to my questions
+\item Your models become \textbf{more purposeful}
 \end{enumerate}
 \end{frame}
 
@@ -80,8 +89,10 @@ How Bayes reshaped my thinking (for better or worse):
 \item Code
 \item Maths
 \end{enumerate}
-\vfill
-Pair up
+\begin{figure}
+\centering
+\includegraphics[width=0.4\textwidth]{fig/exercise.png}
+\end{figure}
 \end{frame}
 
 \begin{frame}{The graphical way}
@@ -108,8 +119,9 @@ roundnode/.style={circle, draw, thick, text width=2.5cm, align=center},
 \draw[-, thick] (0,0) -- node[anchor=south, rotate=90]{Diversity} (0,5);
 \end{tikzpicture}
 \end{center}
-}
 
+\exercise
+}
 \end{frame}
 
 \begin{frame}{The code way}
@@ -124,6 +136,9 @@ $$ Y = a + bX + \epsilon $$
 Y &\sim \text{Normal}(\mu, \sigma_\epsilon) \\
 \mu &= a + bX
 \end{align*}
+Convert a and b to greek
+
+\exercise
 \end{frame}
 
 \begin{frame}{Back to the graphical way}
@@ -161,10 +176,124 @@ rectnode/.style={rectangle, draw, thick, text width=1cm, align=center},
 \end{frame}
 
 \begin{frame}{What happens if the response is not Normal?}
+\begin{center}
+Write the model in a general way --- GLMs!
+\end{center}
 \begin{align*}
 Y &\sim \textcolor{blue}{\text{Distribution}}(\mu,~\phi) \\
 \textcolor{blue}{\text{Link-function}}(\mu) &= a + bX
 \end{align*}
+\begin{table}
+\centering
+\begin{tabular}{lll}
+\hline
+\textcolor{blue}{Distribution} & \textcolor{blue}{Link function} & Typically used for \\
+\hline
+Normal & Identity & Normal stuff...\\
+Binomial & logit / probit & Binary, count with trials...\\
+Poisson & log & Counts \\
+Negative binomial & log & Counts but clustered \\
+Lognormal & log & Skewed continuous \\
+Beta & logit & Proportions \\
+\hline
+\end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}{GLMs are ``generators''}
+\begin{figure}
+\centering
+\includegraphics[height=0.8\textheight]{fig/gashapon-glm.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Binomial generator}
+\begin{center}
+\begin{tikzpicture}[
+roundnode/.style={circle, draw, thick, minimum width=1cm, align=center},
+rectnode/.style={rectangle, draw, thick, minimum width=1cm, align=center},
+]
+%Nodes
+\node[roundnode] (y) {Y}; 
+\node[rectnode] (distr) [right=1cm of y, text width=2cm, minimum height=1cm] {Binomial}; 
+\node[roundnode, blue] (mu) [right=1cm of distr] {Prob.\\logit($p$)}; 
+\node[roundnode] (x) [right=1cm of mu] {X}; 
+\node [below=0.1cm of distr] {\includegraphics[width=2cm]{fig/gashapon-glm.png}} ;
+%Lines
+\draw[-stealth, very thick] (x) -- node[anchor=south]{$\beta$} (mu); 
+\draw[-stealth, very thick] (mu) -- (distr);
+\draw[-stealth, very thick] (distr) -- (y); 
+\end{tikzpicture} 
+\end{center}
+Explain link function
+\end{frame}
+
+\begin{frame}{Poisson generator}
+\begin{center}
+\begin{tikzpicture}[
+roundnode/.style={circle, draw, thick, minimum width=1cm, align=center},
+rectnode/.style={rectangle, draw, thick, minimum width=1cm, align=center},
+]
+%Nodes
+\node[roundnode] (y) {Y}; 
+\node[rectnode] (distr) [right=1cm of y, text width=2cm, minimum height=1cm] {Poisson}; 
+\node[roundnode, blue] (mu) [right=1cm of distr] {Rate\\$\log(\lambda)$}; 
+\node[roundnode] (x) [right=1cm of mu] {X}; 
+\node [below=0.1cm of distr] {\includegraphics[width=2cm]{fig/gashapon-glm.png}} ;
+%Lines
+\draw[-stealth, very thick] (x) -- node[anchor=south]{$\beta$} (mu); 
+\draw[-stealth, very thick] (mu) -- (distr); 
+\draw[-stealth, very thick] (distr) -- (y); 
+\end{tikzpicture} 
+\end{center}
+\end{frame}
+
+\begin{frame}{Negative binomial generator}
+\begin{center}
+\begin{tikzpicture}[
+roundnode/.style={circle, draw, thick, minimum width=1cm, align=center},
+rectnode/.style={rectangle, draw, thick, minimum width=1cm, align=center},
+]
+%Nodes
+\node[roundnode] (y) {Y}; 
+\node[rectnode] (distr) [right=1cm of y, text width=2cm, minimum height=1cm] {Negative\\binomial}; 
+\node[roundnode, blue] (mu) [right=1cm of distr] {Mean\\$\log(\mu)$}; 
+\node[roundnode] (x) [right=1cm of mu] {X}; 
+\node[roundnode, blue] (phi) [below=0.5cm of mu] {Dispersion\\$\log(\phi)$}; 
+\node [below=0.1cm of distr] {\includegraphics[width=2cm]{fig/gashapon-glm.png}} ;
+%Lines
+\draw[-stealth, very thick] (x) -- node[anchor=south]{$\beta$} (mu); 
+\draw[-stealth, very thick] (mu) -- (distr); 
+\draw[-stealth, very thick] (phi) -- (distr.south east);
+\draw[-stealth, very thick] (distr) -- (y); 
+\end{tikzpicture} 
+\end{center}
+\end{frame}
+
+\begin{frame}{Back to the code way}
+\texttt{glm(Y $\sim$ 1 + X, \textcolor{blue}{family = binomial(link = logit)})}
+\vfill
+\texttt{glm(Y $\sim$ 1 + X, \textcolor{blue}{family = poisson(link = log)})}
+\vfill
+\texttt{glm(Y $\sim$ 1 + X, \textcolor{blue}{family = negbinom(link = log)})}
+\vfill
+\begin{center}
+$\vdots$
+\end{center}
+\end{frame}
+
+\begin{frame}{Back to the graphical way}
+\begin{center}
+\begin{tikzpicture}
+\draw[-, thick] (0,0) -- node[anchor=north]{Temperature} (5,0);
+\draw[-, thick] (0,0) -- node[anchor=south, rotate=90]{Diversity} (0,5);
+\end{tikzpicture}
+\end{center}
+\exercise
+\end{frame}
+
+\begin{frame}{Try this next time}
+Next time 
 \end{frame}
 
 \begin{frame}{When should I stop?}
@@ -177,6 +306,10 @@ Y &\sim \textcolor{blue}{\text{Distribution}}(\mu,~\phi) \\
 
 \begin{frame}
 I still use frequentist approach, and everytime I return to it, I realise how much more I appreciate frequentist because of what I have learnt from Bayesian inference.
+\end{frame}
+
+\begin{frame}{Open session}
+\exercise
 \end{frame}
 
 \end{document}
