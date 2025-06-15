@@ -18,6 +18,7 @@ data before
 1. Please install the `brms` package following instructions [here](https://github.com/paul-buerkner/brms?tab=readme-ov-file#faq). 
 After installation, please double check that you could run some of the example
 codes in the helpfile `?brm`.
+2. Also install the `mvabund` package by `install.packages("mvabund")`
 2. To facilitate our discussion sessions, it would be great if you could prepare
 a dataset or research question that you're considering to analyse with 
 Bayesian inference.
