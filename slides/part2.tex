@@ -1,34 +1,182 @@
 \documentclass[12pt]{beamer}
 \usetheme{Singapore}
+\usepackage{mathpazo}
+\renewcommand{\rmdefault}{ppl}
+\setbeamerfont{title}{family=\rmfamily}
+\setbeamerfont{frametitle}{family=\rmfamily}
 \usepackage[utf8]{inputenc}
+\usefonttheme{professionalfonts} 
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
-\author{Hao Ran Lai}
-\title{Application on joint species distribution modelling}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{positioning,fit}
+
+\author{Lai Hao Ran \\ \footnotesize\texttt{hrlai.ecology@gmail.com}}
+\title{Application on\\joint species distribution model}
+\date{} 
 %\setbeamercovered{transparent} 
 \setbeamertemplate{navigation symbols}{} 
-%\logo{} 
-%\institute{} 
-\date{5 March 2025} 
-%\subject{} 
-\newcommand\blfootnote[1]{%
-  \begingroup
-  \renewcommand\thefootnote{}\footnote{#1}%
-  \addtocounter{footnote}{-1}%
-  \endgroup
+
+\titlegraphic{%
+	\centering
+	\includegraphics[height=0.15\textheight]{fig/Marsden-logo-RGB-150.jpg}~%
+	\hspace{1cm}
+	\includegraphics[height=0.15\textheight]{fig/University_of_Canterbury_logo.png}~%
+	\hspace{1cm}
+	\includegraphics[height=0.15\textheight]{fig/searpp.png}
+} 
+
+\lstset{
+  basicstyle=\ttfamily\scriptsize,
+  breaklines=true,
+  showstringspaces=false,
+  frame=single,
+  backgroundcolor=\color{gray!10},
+  literate=
+    {~}{{\textasciitilde}}1
+    {_}{{\_}}1
+    {^}{{\textasciicircum}}1
+    {\\}{{\textbackslash}}1
+    {|}{{\textbar}}1
+    {<}{{\textless}}1
+    {>}{{\textgreater}}1
+    {=}{{=}}1
 }
 
+\newcommand{\exercise}{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \node[anchor=north east] at (current page.north east) {
+        \includegraphics[width=2.5cm]{fig/exercise.png}
+    };
+  \end{tikzpicture}%
+}
 \begin{document}
 
 \begin{frame}
 \titlepage
 \end{frame}
 
+\begin{frame}{Scaling up from GLMs to GLMMs}
+\begin{center}
+Joint species distribution models are just glorified\\generalised linear mixed-effect models (GLMMs)
+\end{center}
+\end{frame}
+
+\begin{frame}{Single-species GLM}
+\only<1-4>{
+The response of species A to environment $X$ across sites.
+}
+\only<2>{
+\begin{center}
+\alert{Whiteboard: graphical way}
+\end{center}}
+\only<3>{
+\begin{align*}
+Y &\sim \text{Binomial}(N,~p) \\
+\text{logit}(p) &= \alpha + \beta X
+\end{align*}
+}
+\only<4>{
+\begin{align*}
+Y &\sim \text{Bernoulli}(p) \\
+\text{logit}(p) &= \alpha + \beta X
+\end{align*}
+}
+\only<5->{
+The response of species A to environment $X$ across site $i$.
+\begin{align*}
+Y_i &\sim \text{Bernoulli}(p_i) \\
+\text{logit}(p_i) &= \alpha + \beta X_i
+\end{align*}
+}
+\uncover<6>{
+\begin{center}
+\alert{Whiteboard: expand to multi-species dataset}
+\end{center}
+}
+\end{frame}
+
+\begin{frame}{Multi-species GLMM}
+The response of species $j$ to environment $X$ across site $i$.
+\uncover<1->{
+\begin{align*}
+Y_{ij} &\sim \text{Bernoulli}(p_{ij}) \\
+\text{logit}(p_{ij}) &= \alpha_i + \alpha_j + \beta_j X_i
+\end{align*}
+}
+\vfill
+\uncover<2>{
+\texttt{y $\sim$ (1 | site) + (1 + X | species) + X,\\
+\phantom{------}family = binomial("logit")}
+}
+\end{frame}
+
+\begin{frame}{Detour 1: incorporating traits}
+\textcolor{blue}{How do traits moderate} the response of species $j$ to environment $X$ across site $i$.
+\pause
+\begin{align*}
+Y_{ij} &\sim \text{Bernoulli}(p_{ij}) \\
+\text{logit}(p_{ij}) &= \alpha_i + \alpha_j~\textcolor{blue}{+ \gamma T_j} + \beta_j X_i~\textcolor{blue}{+ \kappa X_i T_j} \\
+&= \alpha_i + (\alpha_j~\textcolor{blue}{+ \gamma T_j}) + (\beta_j ~\textcolor{blue}{+ \kappa T_j}) X_i
+\end{align*}
+\pause
+\texttt{y $\sim$ (1 | site) + (1 + X | species) + X \textcolor{blue}{+ T + X:T},\\
+\phantom{------}family = binomial("logit")}
+\end{frame}
+
+\begin{frame}{Detour 2: species--species correlations}
+The response of species $j$ to environment $X$ across site $i$, \textcolor{blue}{while accounting for non-independence among species}.
+\pause
+\begin{align*}
+Y_{ij} &\sim \text{Bernoulli}(p_{ij}) \\
+\text{logit}(p_{ij}) &= \alpha_i + \alpha_j + \beta_j X_i~\textcolor{blue}{+ \theta_{1j} Z_{1i} + \theta_{2j} Z_{2i}} 
+\end{align*}
+\pause
+\begin{center}
+\alert{Whiteboard: link to multivariate ordination}
+\end{center}
+\end{frame}
+
+\begin{frame}{Fitting JSDM (finaaaaally)}
+\exercise
+\begin{itemize}
+\item Recommended packages (with traits and latent variables)
+  \begin{itemize}
+  \item \texttt{boral} (Bayesian)
+  \item \texttt{gllvm} (Frequentist)
+  \end{itemize}
+\pause
+\item But we will fit a simpler JSDM with \texttt{brms}
+  \begin{itemize}
+  \item Transferable skill beyond JSDMs
+  \item Fast
+  \item Easy-to-learn syntax
+  \end{itemize}
+\end{itemize}
+\pause
+\begin{center}
+\alert{Pair up with your laptops}
+\end{center}
+\end{frame}
+
 \begin{frame}
-“Sometimes classical statistics gives up. Bayes never gives up . . . so we’re under more respon-
-sibility to check our models.”
+Sometimes classical statistics gives up. Bayes never gives up ... so we're under more responsibility to check our models.
 Andrew Gelman
+\end{frame}
+
+\begin{frame}{When should I stop?}
+\begin{itemize}
+\item Bayesian inference is flexible, therefore it is a rabbit hole
+\item When you spend too much time building ever more complex Bayesian models, it is probably a good time simplify your questions instead
+\item At which point you may find that you don't need Bayes anyways
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+I still use frequentist approach, and everytime I return to it, I realise how much more I appreciate frequentist because of what I have learnt from Bayesian inference.
 \end{frame}
 
 \end{document}
