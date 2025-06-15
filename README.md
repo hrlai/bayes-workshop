@@ -56,3 +56,13 @@ Niku, J., Hui, F. K. C., Taskinen, S., & Warton, D. I. (2019). gllvm: Fast analy
 Jamil, T., Ozinga, W. A., Kleyer, M., & Ter Braak, C. J. F. (2013). Selecting traits that explain species-environment relationships: A generalized linear mixed model approach. Journal of Vegetation Science, 24(6), 988–1000. https://doi.org/10.1111/j.1654-1103.2012.12036.x
 
 Vesk, P. A. (2013). How traits determine species responses to environmental gradients. Journal of Vegetation Science, 24(6), 977–978. https://doi.org/10.1111/jvs.12117
+
+## Useful `R` packages
+
+`brms` is a good starting point to transition from classic inference to Bayesian inference.
+
+`boral` and `gllvm` are my go-to packages for fitting JSDMs.
+
+`greta` is in-development but my go-to for highly customised Bayesian models --- for more advanced users.
+
+`bayesplot` and `tidybayes` are good for post-processing and examining model outputs.
