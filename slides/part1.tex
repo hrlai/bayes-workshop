@@ -10,6 +10,7 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{xcolor}
+\usepackage{listings}
 \usepackage{tikz}
 \usetikzlibrary{positioning,fit}
 
@@ -27,6 +28,23 @@
 	\hspace{1cm}
 	\includegraphics[height=0.15\textheight]{fig/searpp.png}
 } 
+
+\lstset{
+  basicstyle=\ttfamily\scriptsize,
+  breaklines=true,
+  showstringspaces=false,
+  frame=single,
+  backgroundcolor=\color{gray!10},
+  literate=
+    {~}{{\textasciitilde}}1
+    {_}{{\_}}1
+    {^}{{\textasciicircum}}1
+    {\\}{{\textbackslash}}1
+    {|}{{\textbar}}1
+    {<}{{\textless}}1
+    {>}{{\textgreater}}1
+    {=}{{=}}1
+}
 
 \newcommand\blfootnote[1]{%
   \begingroup
@@ -55,14 +73,14 @@ Part 1:
 \item Three ways to write (and read) a model
 \item (Generalised) linear regression
 \end{itemize}
-
+\pause
 Part 2:
 \begin{itemize}
 \item Hierarchical / multilevel / mixed-effect model
 \item How to make a model go?
 \item Interpreting outputs
 \end{itemize}
-\vfill
+\vfill \pause
 We will not explicitly cover:
 \begin{itemize}
 \item Bayes theorem 
@@ -71,9 +89,10 @@ We will not explicitly cover:
 \end{frame}
 
 \begin{frame}{Why?}
+\pause
 How Bayes might reshape our thinking:
-\begin{enumerate}
-\item Understand GLMs better
+\begin{enumerate}[<+->]
+\item Understand GLMs better (we will achieve this today)
 \item Stop worrying about $p$-values and start to be comfortable with uncertainties
 \item See the model as modular; when it fails to converge, understand which part was the culprit
 \item It is slower, so you think harder about your model
@@ -84,11 +103,13 @@ How Bayes might reshape our thinking:
 \end{frame}
 
 \begin{frame}{Three ways to write (and read) a model}
+\begin{Large}
 \begin{enumerate}
 \item Graphical
 \item Code
 \item Maths
 \end{enumerate}
+\end{Large}
 \begin{figure}
 \centering
 \includegraphics[width=0.4\textwidth]{fig/exercise.png}
@@ -96,10 +117,10 @@ How Bayes might reshape our thinking:
 \end{frame}
 
 \begin{frame}{The graphical way}
-The effect of temperature on diversity.
-
 \only<1>{
 \begin{center}
+The effect of temperature on diversity.
+\vfill
 \begin{tikzpicture}[
 roundnode/.style={circle, draw, thick, text width=2.5cm, align=center},
 ]
@@ -118,27 +139,56 @@ roundnode/.style={circle, draw, thick, text width=2.5cm, align=center},
 \draw[-, thick] (0,0) -- node[anchor=north]{Temperature} (5,0);
 \draw[-, thick] (0,0) -- node[anchor=south, rotate=90]{Diversity} (0,5);
 \end{tikzpicture}
-\end{center}
 
+Label axis units \& ticks, add data points, draw regression line
+\end{center}
 \exercise
 }
 \end{frame}
 
-\begin{frame}{The code way}
+\begin{frame}[fragile]{The code way}
 \begin{center}
 \texttt{lm(Y $\sim$ 1 + X)}
 \end{center}
+\pause
+\begin{lstlisting}
+ Family: gaussian  ( identity )
+Formula:          y ~ 1 + x
+
+Dispersion estimate for gaussian family (sigma^2): 0.681 
+
+Conditional model:
+            Estimate Std. Error z value Pr(>|z|)
+(Intercept) -0.03087    0.08296  -0.372    0.710
+x            0.03079    0.07936   0.388    0.698
+\end{lstlisting}
+
 \end{frame}
 
 \begin{frame}{The maths way}
+\only<1-2>{
 $$ Y = a + bX + \epsilon $$
+}
+\only<2>{
 \begin{align*}
 Y &\sim \text{Normal}(\mu, \sigma_\epsilon) \\
 \mu &= a + bX
 \end{align*}
-Convert a and b to greek
-
-\exercise
+}
+\only<3->{
+$$ Y = \alpha + \beta X + \epsilon $$
+}
+\only<3->{
+\begin{align*}
+Y &\sim \text{Normal}(\mu, \sigma_\epsilon) \\
+\mu &= \alpha + \beta X
+\end{align*}
+}
+\only<4>{ 
+\exercise 
+\vfill
+Label $\alpha$ and $\beta$ on your graph (try $\mu$, $Y$ and $\sigma$ if you want) 
+}
 \end{frame}
 
 \begin{frame}{Back to the graphical way}
@@ -179,10 +229,12 @@ rectnode/.style={rectangle, draw, thick, text width=1cm, align=center},
 \begin{center}
 Write the model in a general way --- GLMs!
 \end{center}
+\pause
 \begin{align*}
 Y &\sim \textcolor{blue}{\text{Distribution}}(\mu,~\phi) \\
 \textcolor{blue}{\text{Link-function}}(\mu) &= a + bX
 \end{align*}
+\pause
 \begin{table}
 \centering
 \begin{tabular}{lll}
@@ -208,6 +260,11 @@ Beta & logit & Proportions \\
 \end{frame}
 
 \begin{frame}{Binomial generator}
+\begin{align*}
+Y &\sim \textcolor{blue}{\text{Binomial}}(N,~p) \\
+\textcolor{blue}{\text{logit}}(p) &= \alpha + \beta X
+\end{align*}
+\pause
 \begin{center}
 \begin{tikzpicture}[
 roundnode/.style={circle, draw, thick, minimum width=1cm, align=center},
@@ -218,17 +275,23 @@ rectnode/.style={rectangle, draw, thick, minimum width=1cm, align=center},
 \node[rectnode] (distr) [right=1cm of y, text width=2cm, minimum height=1cm] {Binomial}; 
 \node[roundnode, blue] (mu) [right=1cm of distr] {Prob.\\logit($p$)}; 
 \node[roundnode] (x) [right=1cm of mu] {X}; 
+\node[roundnode] (trial) [below=0.5cm of mu] {Trial size\\$N$}; 
 \node [below=0.1cm of distr] {\includegraphics[width=2cm]{fig/gashapon-glm.png}} ;
 %Lines
 \draw[-stealth, very thick] (x) -- node[anchor=south]{$\beta$} (mu); 
 \draw[-stealth, very thick] (mu) -- (distr);
+\draw[-stealth, very thick] (trial) -- (distr.south east);
 \draw[-stealth, very thick] (distr) -- (y); 
 \end{tikzpicture} 
 \end{center}
-Explain link function
 \end{frame}
 
 \begin{frame}{Poisson generator}
+\begin{align*}
+Y &\sim \textcolor{blue}{\text{Poisson}}(\lambda) \\
+\textcolor{blue}{\log}(\lambda) &= \alpha + \beta X
+\end{align*}
+\pause
 \begin{center}
 \begin{tikzpicture}[
 roundnode/.style={circle, draw, thick, minimum width=1cm, align=center},
@@ -249,6 +312,11 @@ rectnode/.style={rectangle, draw, thick, minimum width=1cm, align=center},
 \end{frame}
 
 \begin{frame}{Negative binomial generator}
+\begin{align*}
+Y &\sim \textcolor{blue}{\text{Negbinom}}(\mu,~\phi) \\
+\textcolor{blue}{\log}(\mu) &= \alpha + \beta X
+\end{align*}
+\pause
 \begin{center}
 \begin{tikzpicture}[
 roundnode/.style={circle, draw, thick, minimum width=1cm, align=center},
@@ -275,41 +343,56 @@ rectnode/.style={rectangle, draw, thick, minimum width=1cm, align=center},
 \vfill
 \texttt{glm(Y $\sim$ 1 + X, \textcolor{blue}{family = poisson(link = log)})}
 \vfill
-\texttt{glm(Y $\sim$ 1 + X, \textcolor{blue}{family = negbinom(link = log)})}
+\texttt{glm(Y $\sim$ 1 + X, \textcolor{blue}{family = nbinom(link = log)})}
 \vfill
 \begin{center}
 $\vdots$
 \end{center}
 \end{frame}
 
-\begin{frame}{Back to the graphical way}
+\begin{frame}{Combining the ways}
+\exercise
+\only<1>{
+\begin{figure}
+\centering
+\includegraphics[width=0.7\textwidth]{fig/dragonball-fusion.jpg}
+\end{figure}
+}
+\only<2->{
+\begin{enumerate}
+\item Express \texttt{Richness $\sim$ 1 + Temperature} mathematically
+\item Graph it out; including points, line, and as many labels as you can
+\end{enumerate}
+}
+\uncover<3>{
 \begin{center}
 \begin{tikzpicture}
-\draw[-, thick] (0,0) -- node[anchor=north]{Temperature} (5,0);
-\draw[-, thick] (0,0) -- node[anchor=south, rotate=90]{Diversity} (0,5);
+\draw[-, thick] (0,0) -- node[anchor=north]{Temperature} (4,0);
+\draw[-, thick] (0,0) -- node[anchor=south, rotate=90]{Richness in link scale} (0,4);
+\draw[-, thick] (6,0) -- node[anchor=north]{Temperature} (10,0);
+\draw[-, thick] (6,0) -- node[anchor=south, rotate=90]{Richness} (6,4);
 \end{tikzpicture}
 \end{center}
-\exercise
+}
 \end{frame}
 
-\begin{frame}{Try this next time}
-Next time 
-\end{frame}
-
-\begin{frame}{When should I stop?}
-\begin{itemize}
-\item Bayesian inference is flexible, therefore it is a rabbit hole
-\item When you spend too much time building ever more complex Bayesian models, it is probably a good time simplify your questions instead
-\item At which point you may find that you don't need Bayes anyways
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-I still use frequentist approach, and everytime I return to it, I realise how much more I appreciate frequentist because of what I have learnt from Bayesian inference.
+\begin{frame}{Hang on...where is the Bayesian in this?}
+\pause
+\begin{center}
+In the generative thinking.
+\begin{figure}
+\includegraphics[height=0.5\textheight]{fig/gashapon-glm.png}
+\end{figure}
+\pause 
+Without it, Bayesian inference is no different from frequentist approach --- just another algorithm.
+\end{center}
 \end{frame}
 
 \begin{frame}{Open session}
 \exercise
+\begin{center}
+Express your analysis to a colleague in a way that is comfortable to \textit{both of you}. 
+\end{center}
 \end{frame}
 
 \end{document}
