@@ -10,9 +10,8 @@ and concepts rather than learning from scratch.
 ## Prerequisite
 
 1. Undergraduate-level introductory biostatistics is useful, but not necessary
-2. Basic `R` programming: you've load and analysed some ecological
-data before
-3. Curiosity 
+2. Basic `R` programming: you've loaded and analysed some ecological
+data before 
 
 ## Preparation
 
