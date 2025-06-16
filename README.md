@@ -1,7 +1,5 @@
 # Workshop material for *Introduction to Bayesian Ecological Modelling*
 
-*Under construction. More to come!*
-
 This workshop is designed for a small group size to work in pairs, in a room 
 with whiteboard. It has a [*Statistical Rethinking*](https://xcelab.net/rm/) 
 (McElreath 2020) flavour to it, i.e., we are revisiting statistical tools 
