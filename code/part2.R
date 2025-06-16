@@ -64,6 +64,7 @@ mod <-
 # - can you translate the model formula to graphs?
 # - recall what is the Bernoulli distribution ("family") and what is
 #   canonical link function?
+# - priors (if covered in Part 1)
 
 
 
