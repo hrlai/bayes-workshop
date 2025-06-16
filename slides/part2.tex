@@ -163,29 +163,65 @@ Y_{ij} &\sim \text{Bernoulli}(p_{ij}) \\
 \end{center}
 \end{frame}
 
-\begin{frame}
-Sometimes classical statistics gives up. Bayes never gives up ... so we're under more responsibility to check our models.
-Andrew Gelman
+\begin{frame}{Coding session}
+\exercise
+\begin{center}
+Run \texttt{code/part2.R} up until the \texttt{brm} section.
+\end{center}
 \end{frame}
 
-\begin{frame}{When should I stop?}
-\begin{itemize}
-\item Bayesian inference is flexible, therefore it is a rabbit hole
-\item When you spend too much time building ever more complex Bayesian models, it is probably a good time simplify your questions instead
+\begin{frame}{Model diagnostics}
+\exercise
+\begin{quote}
+Sometimes classical statistics gives up.\\Bayes never gives up ... so we're under more responsibility to check our models. 
+\begin{flushright}
+--- Andrew Gelman
+\end{flushright}
+\end{quote}
+\end{frame}
+
+\begin{frame}{Post-processing posteriors}
+\exercise
+\begin{center}
+You get posterior for everything.
+
+\bigskip
+
+This is one of the perks of Bayesian inference.
+
+\vfill
+
+\alert{Whiteboard: why we should calculate eveything across posteriors}
+\end{center}
+\end{frame}
+
+\begin{frame}{Bonus: information borrowing}
+\begin{center}
+Parameters can be correlated;\\this can be a good thing called \textit{shrinkage}.
+\end{center}
+\end{frame}
+
+\begin{frame}{Closing remarks: when should I stop?}
+\begin{itemize}[<+->]
+\item Bayesian inference is flexible, therefore it's a rabbit hole
+\item When you spend too much time building ever more complex Bayesian models, it's probably a good time simplify your questions instead
 \item At which point you may find that you don't need Bayes anyways
+\item I still use frequentist approach, and everytime I return to it, I realise how much more I appreciate frequentist because of what I have learnt from Bayesian inference.
 \end{itemize}
 \end{frame}
 
-\begin{frame}
-I still use frequentist approach, and everytime I return to it, I realise how much more I appreciate frequentist because of what I have learnt from Bayesian inference.
-\end{frame}
+\begin{frame}{Thank you!}
+Feedback welcome! Link to Google Form below:
+\begin{figure}
+\centering
+\includegraphics[width=0.3\textwidth]{fig/qrcode.png}
+\end{figure}
 
-
-\begin{frame}{Feedback}
-
-\end{frame}
-
-{Further reading}
+On the GitHub repository:
+\begin{itemize}
+\item Further readings
+\item Suggested \texttt{R} packages
+\end{itemize}
 
 \end{frame}
 
