@@ -66,3 +66,7 @@ Vesk, P. A. (2013). How traits determine species responses to environmental grad
 `greta` is in-development but my go-to for highly customised Bayesian models --- for more advanced users.
 
 `bayesplot` and `tidybayes` are good for post-processing and examining model outputs.
+
+## Feedback form
+
+Feel free to let us know your thoughts [here](https://forms.gle/2U4zhH7vjnYcUGraA) (a very short form with just two open-ended questions!)
