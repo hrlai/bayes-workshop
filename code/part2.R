@@ -99,8 +99,67 @@ pp_check(mod, ndraws = 100)
 # that is calculating the estimates of species-specific slopes
 # the random species slopes we got out of the model are actually *deviation*
 # from the fixed slope, not their actual slopes; to get them, we need to
-# add up fixed + random slopes
+# add up fixed + random slopes;
 # although you can do so using the function coef(mod)$Species, 
 # we will do it manually here so you have the skill to perform all sorts of
 # calculation from the posterior distributons in the future
 
+# tips: get variable names from a fitted brms model with variables(mod)
+
+coef_spp <- 
+    spread_draws(mod, 
+                 b_Intercept,
+                 b_soil.dry,
+                 r_Species[Species, Param]) %>% 
+    pivot_wider(names_from = Param,
+                values_from = r_Species,
+                names_prefix = "r_") %>% 
+    mutate(Intercept = b_Intercept + r_Intercept,
+           soil.dry  = b_soil.dry + r_soil.dry) %>% 
+    # for each species, summarise its intercept and slope for plotting 
+    # them out as effect sizes
+    # there are many option; we'll use the median and 90% credible intervals
+    group_by(Species) %>% 
+    median_qi(Intercept, soil.dry,
+              .width = 0.90)
+
+# visualise
+# intercepts
+coef_spp %>% 
+    mutate(Species = fct_reorder(Species, Intercept)) %>% 
+    ggplot() +
+    geom_vline(xintercept = 0, linetype = 2) +
+    geom_errorbarh(aes(y = Species, 
+                       xmin = Intercept.lower, 
+                       xmax = Intercept.upper),
+                   height = 0) +
+    geom_point(aes(Intercept, Species)) +
+    theme_bw()
+
+# slopes
+coef_spp %>% 
+    mutate(Species = fct_reorder(Species, soil.dry)) %>% 
+    ggplot() +
+    geom_vline(xintercept = 0, linetype = 2) +
+    geom_errorbarh(aes(y = Species, 
+                       xmin = soil.dry.lower, 
+                       xmax = soil.dry.upper),
+                   height = 0) +
+    geom_point(aes(soil.dry, Species)) +
+    theme_bw()
+
+# intercepts vs. slopes (to illustrate correlated random terms)
+coef_spp %>% 
+    ggplot() +
+    geom_vline(xintercept = 0, linetype = 2) +
+    geom_hline(yintercept = 0, linetype = 2) +
+    geom_errorbarh(aes(y = soil.dry, 
+                       xmin = Intercept.lower, 
+                       xmax = Intercept.upper),
+                   height = 0) +
+    geom_errorbar(aes(x = Intercept, 
+                       ymin = soil.dry.lower, 
+                       ymax = soil.dry.upper),
+                   width = 0) +
+    geom_point(aes(Intercept, soil.dry)) +
+    theme_bw()
